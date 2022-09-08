@@ -4,8 +4,6 @@ import numpy as np
 # font
 font = cv2.FONT_HERSHEY_SIMPLEX
   
-
-  
 # fontScale
 fontScale = 1
    

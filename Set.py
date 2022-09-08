@@ -65,7 +65,7 @@ def checkAllCards():
         for item in combinations(range(15),3):
             for card in range(0,3):
                 arrayForCheck[card] = [item[card]//5, item[card]%5]
-            print("Long: ", arrayForCheck)
+            checkCards(arrayForCheck, cardNumberArray)
     else:
         for item in combinations(range(12),3):
             for card in range(0,3):
@@ -85,13 +85,15 @@ def refreshButtonImage(x, y):
     global cardImageArray
     global cardNumberArray
 
-    checkCards(clickedArray, cardNumberArray)
-    for card_x, card_y in clickedArray:
-        cardImageArray[card_x][card_y] = PhotoImage(file=''.join(map(str, cardDeckArray[cardsCounter]))+".png")
-        cardNumberArray[card_x][card_y] = cardDeckArray[cardsCounter]
-        cardsCounter = cardsCounter + 1
-        btnCardArray[card_x][card_y].config(bg="SystemButtonFace", image=cardImageArray[card_x][card_y])
-
+    if checkCards(clickedArray, cardNumberArray):
+        for card_x, card_y in clickedArray:
+            cardImageArray[card_x][card_y] = PhotoImage(file=''.join(map(str, cardDeckArray[cardsCounter]))+".png")
+            cardNumberArray[card_x][card_y] = cardDeckArray[cardsCounter]
+            cardsCounter = cardsCounter + 1
+            btnCardArray[card_x][card_y].config(bg="SystemButtonFace", image=cardImageArray[card_x][card_y])
+    else:
+        for card_x, card_y in clickedArray:
+            btnCardArray[card_x][card_y].config(bg="SystemButtonFace", image=cardImageArray[card_x][card_y])
     # Reset array and counter
     clickedArray = [[99, 99],[99, 99],[99, 99]]
     counter = 0

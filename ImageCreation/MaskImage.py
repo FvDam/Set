@@ -13,6 +13,8 @@ counter = 0
 def changeColor(image, color):
     NewImage = np.zeros((image.shape[0], image.shape[1], 4), np.uint8)
 
+    #For adding with instead of transparant
+    NewImage.fill(255)
     for i in range(image.shape[0]):
         for j in range(image.shape[1]):
             if image[i][j] == 0:
@@ -23,7 +25,9 @@ def changeColor(image, color):
 def createCard(image):
     global counter
     card1 = np.zeros((4*image.shape[0],image.shape[1],image.shape[2]), np.uint8)
-    card1.fill(0)
+    
+    #For adding with instead of transparant
+    card1.fill(255)
     card2 = card1.copy()
 
     # Creating card with only 1 pattern

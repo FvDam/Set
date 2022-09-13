@@ -1,3 +1,4 @@
+from email.policy import default
 from telnetlib import theNULL
 from tkinter import *
 from itertools import combinations
@@ -6,11 +7,9 @@ import random
 cardsCounter = 0
 counter = 0
 clickedArray = [[99, 99],[99, 99],[99, 99]]
-cardImageArray = [[0 for x in range(5)] for x in range(3)]
-cardNumberArray = [[['0','0','0','0'] for x in range(5)] for x in range(3)]
+cardImageArray = [[0 for y in range(3)] for x in range(5)]
+cardNumberArray = [[['0','0','0','0'] for y in range(3)] for x in range(5)]
 cardDeckArray = [[a,b,c,d] for a in ['1','2','3'] for b in ['1','2','3'] for c in ['1','2','3'] for d in ['1','2','3']]
-# for item in combinations(range(12),3):
-#     print(item)
 
 # Function for filling initial button array
 def fillImageButtonArray():
@@ -19,8 +18,8 @@ def fillImageButtonArray():
     global cardImageArray
 
     random.shuffle(cardDeckArray)
-    for x in range(0, 3):
-        for y in range(0, 4):
+    for x in range(0, 4):
+        for y in range(0, 3):
             cardImageArray[x][y] = PhotoImage(file=''.join(map(str, cardDeckArray[cardsCounter]))+".png")
             cardNumberArray[x][y] = cardDeckArray[cardsCounter]
             cardsCounter = cardsCounter + 1
@@ -31,7 +30,6 @@ def checkCards(clickedArray, cardNumberArray):
 
     for i in range(0,3):
         cards[i] = cardNumberArray[clickedArray[i][0]][clickedArray[i][1]]
-    # print(cards)
 
     # Check if cards are all te same
     for atri in range(0, 4):
@@ -51,7 +49,6 @@ def checkCards(clickedArray, cardNumberArray):
                 checkArray[atri] = 2
 
     if sum(checkArray)==8:
-        print(cards)
         print("You found a set: ", clickedArray)
         return True
     else:
@@ -59,41 +56,81 @@ def checkCards(clickedArray, cardNumberArray):
 
 def checkAllCards():
     global cardNumberArray
+    numberOfSets = 0
     arrayForCheck = [[99, 99],[99, 99],[99, 99]]
 
-    if cardNumberArray[0][4][0] != '0':
+    if cardNumberArray[4][0][0] != '0':
+        # If deck contains 15 cards
         for item in combinations(range(15),3):
             for card in range(0,3):
-                arrayForCheck[card] = [item[card]//5, item[card]%5]
-            checkCards(arrayForCheck, cardNumberArray)
+                arrayForCheck[card] = [item[card]%5, item[card]//5]
+            numberOfSets = numberOfSets + checkCards(arrayForCheck, cardNumberArray)
     else:
         for item in combinations(range(12),3):
             for card in range(0,3):
-                arrayForCheck[card] = [item[card]//4, item[card]%4]
-            # print("Short: ",arrayForCheck)
-            checkCards(arrayForCheck, cardNumberArray)
+                arrayForCheck[card] = [item[card]%4, item[card]//4]
+            numberOfSets = numberOfSets + checkCards(arrayForCheck, cardNumberArray)
+        if numberOfSets == 0:
+            fillCardsToFifteen()
 
-    # for item in combinations(range(12),3):
-    
+    print(f"Number of sets found: {numberOfSets}\n\n",)
 
-    print("Happy!")
-
-def refreshButtonImage(x, y):
+def fillCardsToFifteen():
     global clickedArray
     global counter
     global cardsCounter
     global cardImageArray
     global cardNumberArray
 
+    for y in range(3):
+        cardImageArray[4][y] = PhotoImage(file=''.join(map(str, cardDeckArray[cardsCounter]))+".png")
+        cardNumberArray[4][y] = cardDeckArray[cardsCounter]
+        cardsCounter = cardsCounter + 1
+        btnCardArray[4][y].config(bg="SystemButtonFace", state=NORMAL, bd=2, image=cardImageArray[4][y])
+    
+    # Reset array and counter
+    clickedArray = [[99, 99],[99, 99],[99, 99]]
+    counter = 0
+
+def refreshButtonImage():
+    global clickedArray
+    global counter
+    global cardsCounter
+    global cardImageArray
+    global cardNumberArray
+    
     if checkCards(clickedArray, cardNumberArray):
-        for card_x, card_y in clickedArray:
-            cardImageArray[card_x][card_y] = PhotoImage(file=''.join(map(str, cardDeckArray[cardsCounter]))+".png")
-            cardNumberArray[card_x][card_y] = cardDeckArray[cardsCounter]
-            cardsCounter = cardsCounter + 1
-            btnCardArray[card_x][card_y].config(bg="SystemButtonFace", image=cardImageArray[card_x][card_y])
+        if cardNumberArray[4][0][0] != '0':
+            # If deck contains 15 cards
+            cardsY = [0,1,2]
+            for card_x, card_y in clickedArray:
+                if card_x == 4:
+                    cardsY.remove(card_y)
+
+            print("CardsY: ",cardsY)
+
+            cardsYCounter = 0
+            for card_x, card_y in clickedArray:
+                if card_x < 4:
+                    cardImageArray[card_x][card_y] = cardImageArray[4][cardsY[cardsYCounter]]
+                    cardNumberArray[card_x][card_y] = cardNumberArray[4][cardsY[cardsYCounter]]
+                    btnCardArray[card_x][card_y].config(bg="SystemButtonFace", image=cardImageArray[card_x][card_y])
+                    cardsYCounter = cardsYCounter + 1
+            # Disable cards
+            for y in range(3):
+                cardNumberArray[4][y] = '0'
+                btnCardArray[4][y].config(bg="SystemButtonFace", state=DISABLED, bd=0, image=PhotoImage(file='testEmpty.png'))
+        else:
+            for card_x, card_y in clickedArray:
+                cardImageArray[card_x][card_y] = PhotoImage(file=''.join(map(str, cardDeckArray[cardsCounter]))+".png")
+                cardNumberArray[card_x][card_y] = cardDeckArray[cardsCounter]
+                cardsCounter = cardsCounter + 1
+                btnCardArray[card_x][card_y].config(bg="SystemButtonFace", image=cardImageArray[card_x][card_y])
     else:
+        # Set colors back to default if it isn't containing a set
         for card_x, card_y in clickedArray:
             btnCardArray[card_x][card_y].config(bg="SystemButtonFace", image=cardImageArray[card_x][card_y])
+
     # Reset array and counter
     clickedArray = [[99, 99],[99, 99],[99, 99]]
     counter = 0
@@ -122,8 +159,7 @@ def color_change(x, y):
     print(clickedArray)
     
     if counter == 3:
-        refreshButtonImage(x, y)
-    # print(x,y)
+        refreshButtonImage()
 
 window = Tk()
 
@@ -146,33 +182,33 @@ setExtraFrame = Frame(window)
 ## Button frame
 buttonFrame = Frame(window)
 
-btnCardArray = [[0 for x in range(5)] for x in range(3)]
-cardValueArray = [[0 for x in range(5)] for x in range(3)]
+btnCardArray = [[0 for y in range(3)] for x in range(5)]
+cardValueArray = [[0 for y in range(3)] for x in range(5)]
 
 
 emptyImage= PhotoImage(file='testEmpty.png')
 
 fillImageButtonArray()
 ## Row 1
-for y in range(0, 5):
-    if y < 4:
-        btnCardArray[0][y] = Button(setUpperFrame, image=cardImageArray[0][y], command = lambda x=0, y=y: color_change(0, y))
-        btnCardArray[0][y].pack(side = LEFT )
+for x in range(0, 5):
+    if x < 4:
+        btnCardArray[x][0] = Button(setUpperFrame, image=cardImageArray[x][0], command = lambda x=x, y=0: color_change(x, 0))
+        btnCardArray[x][0].pack(side = LEFT )
             
-        btnCardArray[1][y] = Button(setCenterFrame, image=cardImageArray[1][y], command = lambda x=1, y=y: color_change(1, y))
-        btnCardArray[1][y].pack(side = LEFT)
+        btnCardArray[x][1] = Button(setCenterFrame, image=cardImageArray[x][1], command = lambda x=x, y=1: color_change(x, 1))
+        btnCardArray[x][1].pack(side = LEFT)
 
-        btnCardArray[2][y] = Button(setLowerFrame, image=cardImageArray[2][y], command = lambda x=2, y=y: color_change(2, y))
-        btnCardArray[2][y].pack(side = LEFT)
+        btnCardArray[x][2] = Button(setLowerFrame, image=cardImageArray[x][2], command = lambda x=x, y=2: color_change(x, 2))
+        btnCardArray[x][2].pack(side = LEFT)
     else:
-        btnCardArray[0][y] = Button(setUpperFrame, image=emptyImage, state=DISABLED, bd=0, command = lambda x=0, y=y: color_change(0, y))
-        btnCardArray[0][y].pack(side = LEFT)
+        btnCardArray[x][0] = Button(setUpperFrame, image=emptyImage, state=DISABLED, bd=0, command = lambda x=x, y=0: color_change(x, 0))
+        btnCardArray[x][0].pack(side = LEFT)
             
-        btnCardArray[1][y] = Button(setCenterFrame, image=emptyImage, state=DISABLED, bd=0, command = lambda x=1, y=y: color_change(1, y))
-        btnCardArray[1][y].pack(side = LEFT)
+        btnCardArray[x][1] = Button(setCenterFrame, image=emptyImage, state=DISABLED, bd=0, command = lambda x=x, y=1: color_change(x, 1))
+        btnCardArray[x][1].pack(side = LEFT)
 
-        btnCardArray[2][y] = Button(setLowerFrame, image=emptyImage, state=DISABLED, bd=0, command = lambda x=2, y=y: color_change(2, y))
-        btnCardArray[2][y].pack(side = LEFT)
+        btnCardArray[x][2] = Button(setLowerFrame, image=emptyImage, state=DISABLED, bd=0, command = lambda x=x, y=2: color_change(x, 2))
+        btnCardArray[x][2].pack(side = LEFT)
 
 btnCheckCards = Button(buttonFrame, text="CheckCards", command = checkAllCards)
 btnCheckCards.pack( fill = BOTH, expand = True)

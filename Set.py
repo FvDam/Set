@@ -1,8 +1,7 @@
-from email.policy import default
-from telnetlib import theNULL
 from tkinter import *
 from itertools import combinations
 import random
+import os
 
 cardsCounter = 0
 counter = 0
@@ -10,6 +9,8 @@ clickedArray = [[99, 99],[99, 99],[99, 99]]
 cardImageArray = [[0 for y in range(3)] for x in range(5)]
 cardNumberArray = [[['0','0','0','0'] for y in range(3)] for x in range(5)]
 cardDeckArray = [[a,b,c,d] for a in ['1','2','3'] for b in ['1','2','3'] for c in ['1','2','3'] for d in ['1','2','3']]
+
+os.chdir("C://Users//frans//Documents//Thuis//Python//Set//Set")
 
 # Function for filling initial button array
 def fillImageButtonArray():
@@ -49,7 +50,7 @@ def checkCards(clickedArray, cardNumberArray):
                 checkArray[atri] = 2
 
     if sum(checkArray)==8:
-        print("You found a set: ", clickedArray)
+        print(f"You found a set: ", clickedArray)
         return True
     else:
         return False
@@ -73,7 +74,7 @@ def checkAllCards():
         if numberOfSets == 0:
             fillCardsToFifteen()
 
-    print(f"Number of sets found: {numberOfSets}\n\n",)
+    print(f"Total amount of sets found: {numberOfSets}\n\n",)
 
 def fillCardsToFifteen():
     global clickedArray
@@ -100,6 +101,9 @@ def refreshButtonImage():
     global cardNumberArray
     
     if checkCards(clickedArray, cardNumberArray):
+        if cardsCounter == 81:
+           print("Game done")
+            
         if cardNumberArray[4][0][0] != '0':
             # If deck contains 15 cards
             cardsY = [0,1,2]
@@ -107,7 +111,7 @@ def refreshButtonImage():
                 if card_x == 4:
                     cardsY.remove(card_y)
 
-            print("CardsY: ",cardsY)
+            print("CardsY: ", cardsY)
 
             cardsYCounter = 0
             for card_x, card_y in clickedArray:
@@ -126,6 +130,7 @@ def refreshButtonImage():
                 cardNumberArray[card_x][card_y] = cardDeckArray[cardsCounter]
                 cardsCounter = cardsCounter + 1
                 btnCardArray[card_x][card_y].config(bg="SystemButtonFace", image=cardImageArray[card_x][card_y])
+            print(f"Number of cards: {cardsCounter}")
     else:
         # Set colors back to default if it isn't containing a set
         for card_x, card_y in clickedArray:
@@ -212,6 +217,8 @@ for x in range(0, 5):
 
 btnCheckCards = Button(buttonFrame, text="CheckCards", command = checkAllCards)
 btnCheckCards.pack( fill = BOTH, expand = True)
+
+scoreFrame.pack (fill = BOTH, expand = True)
 
 setMainFrame.pack(fill = BOTH, expand = True)
 setFrame.pack(fill = BOTH, expand = True)

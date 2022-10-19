@@ -23,21 +23,22 @@ class tkinterApp(tk.Tk):
 		
 		# __init__ function for class Tk
 		tk.Tk.__init__(self, *args, **kwargs)
+		print("Init")
 		self.title("Set")
 		self.geometry("1000x700")
 		# creating a container
-		container = tk.Frame(self)
-		container.pack(side = "top", fill = "both", expand = True)
-		container.grid_rowconfigure(0, weight = 1)
-		container.grid_columnconfigure(0, weight = 1)
+		self.container = tk.Frame(self)
+		self.container.pack(side = "top", fill = "both", expand = True)
+		self.container.grid_rowconfigure(0, weight = 1)
+		self.container.grid_columnconfigure(0, weight = 1)
 
 		# initializing frames to an empty array
 		self.frames = {}
 
 		# iterating through a tuple consisting
 		# of the different page layouts
-		for F in (StartPage, ActualGame, Page2):
-			frame = F(container, self)
+		for F in (StartPage, ActualGame, StatsPage):
+			frame = F(self.container, self)
 
 			# initializing frame of that object from
 			# startpage, page1, page2 respectively with
@@ -53,6 +54,11 @@ class tkinterApp(tk.Tk):
 	def show_frame(self, cont):
 		frame = self.frames[cont]
 		frame.tkraise()
+	
+	def reloadGame(self):
+		frame = ActualGame(self.container, self)
+		self.frames[ActualGame] = frame
+		frame.grid(row = 0, column = 0, sticky ="nsew")
 
 # first window frame startpage
 
@@ -67,7 +73,7 @@ class StartPage(tk.Frame):
 		# grid
 		label.grid(row = 0, column = 4, padx = 10, pady = 10)
 
-		button1 = ttk.Button(self, text ="Page 1",
+		button1 = ttk.Button(self, text ="Start Game",
 		command = lambda : controller.show_frame(ActualGame))
 	
 		# putting the button in its place by
@@ -75,8 +81,8 @@ class StartPage(tk.Frame):
 		button1.grid(row = 1, column = 1, padx = 10, pady = 10)
 
 		## button to show frame 2 with text layout2
-		button2 = ttk.Button(self, text ="Page 2",
-		command = lambda : controller.show_frame(Page2))
+		button2 = ttk.Button(self, text ="Stats page",
+		command = lambda : controller.show_frame(StatsPage))
 	
 		# putting the button in its place by
 		# using grid
@@ -155,9 +161,6 @@ class ActualGame(tk.Frame):
 														bd=0,
 														y=2: self.color_change(x, 2))
 				self.btnCardArray[x][2].pack(side = LEFT)
-
-		btnCheckCards = tk.Button(self.buttonFrame, text="CheckCards", command = self.checkAllCards)
-		btnCheckCards.pack( fill = BOTH, expand = True)
 		
 		# Labels
 		lblScore = tk.Label(self.scoreFrame, text = "Score:")
@@ -180,14 +183,19 @@ class ActualGame(tk.Frame):
 		self.setUpperFrame.pack(expand = True)
 		self.setCenterFrame.pack(expand = True)
 		self.setLowerFrame.pack(expand = True)
+		
+
+		btnCheckCards = tk.Button(self.buttonFrame, text="CheckCards", command = self.checkAllCards)
+		btnCheckCards.pack( side=LEFT,  expand = True)
+
+		btnResetGame = tk.Button(self.buttonFrame, text = "Reset Game",
+							command = lambda : controller.reloadGame())
+		btnResetGame.pack(side=LEFT, expand = True)
+
+		btnStatsPage = tk.Button(self.buttonFrame, text = "Stats page",
+							command = lambda : controller.show_frame(StatsPage))
+		btnStatsPage.pack(side=LEFT, expand = True)
 		self.buttonFrame.pack(fill = BOTH, expand = True)
-		# button to show frame 2 with text
-		# layout2
-		button2 = tk.Button(self.buttonFrame, text ="Page 2",
-							command = lambda : controller.show_frame(Page2))
-		# button2 = tk.Button(self.buttonFrame, text ="Page 2",
-		# 			command = self.destroy)
-		button2.pack(fill = BOTH, expand = True)
 	
 	def fillImageButtonArray(self):
 		random.shuffle(self.cardDeckArray)
@@ -329,10 +337,10 @@ class ActualGame(tk.Frame):
 		self.lblTime.after(1000, self.updateRunTime)
 
 # third window frame page2
-class Page2(tk.Frame):
+class StatsPage(tk.Frame):
 	def __init__(self, parent, controller):
 		tk.Frame.__init__(self, parent)
-		label = ttk.Label(self, text ="Page 2", font = LARGEFONT)
+		label = ttk.Label(self, text ="Stats template", font = LARGEFONT)
 		label.grid(row = 0, column = 4, padx = 10, pady = 10)
 
 		# button to show frame 2 with text

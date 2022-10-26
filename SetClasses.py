@@ -4,9 +4,7 @@ from tkinter import ttk
 from itertools import combinations
 import os
 import random
-import time
-from tkinter import messagebox
-from xml.etree.ElementTree import tostring
+import time #time.perf_counter()
 
 # Handy links
 # Password manager:
@@ -20,6 +18,7 @@ from xml.etree.ElementTree import tostring
 LARGEFONT =("Verdana", 35)
 
 class tkinterApp(tk.Tk):
+	
 	# __init__ function for class tkinterApp
 	def __init__(self, *args, **kwargs):
 		
@@ -36,10 +35,10 @@ class tkinterApp(tk.Tk):
 
 		# initializing frames to an empty array
 		self.frames = {}
-
+		self.Pages = (StartPage, ActualGame, StatsPage)
 		# iterating through a tuple consisting
 		# of the different page layouts
-		for F in (StartPage, ActualGame, StatsPage):
+		for F in self.Pages:
 			frame = F(self.container, self)
 
 			# initializing frame of that object from
@@ -54,10 +53,16 @@ class tkinterApp(tk.Tk):
 	# to display the current frame passed as
 	# parameter
 	def show_frame(self, cont):
+		for F in self.Pages:
+			self.frames[F].resetVisible()
+		
 		frame = self.frames[cont]
+
+		frame.setVisible()
 		frame.tkraise()
 	
 	def reloadGame(self):
+		self.frames[ActualGame].destroy()
 		frame = ActualGame(self.container, self)
 		self.frames[ActualGame] = frame
 		frame.grid(row = 0, column = 0, sticky ="nsew")
@@ -90,11 +95,19 @@ class StartPage(tk.Frame):
 		# using grid
 		button2.grid(row = 2, column = 1, padx = 10, pady = 10)
 
+	def setVisible(self):
+		self.visible = True
+
+	def resetVisible(self):
+		self.visible = False
+
+		
 
 # second window frame page1
 class ActualGame(tk.Frame):
 	def __init__(self, parent, controller):
 		tk.Frame.__init__(self, parent)
+		self.resetVisible()
 		self.inGameTime = 0
 		self.startTime = time.perf_counter()
 		self.cardsCounter = 0
@@ -416,8 +429,15 @@ class ActualGame(tk.Frame):
 		# self.lblTime.config(text = f"Time: {int(time.perf_counter()-self.startTime):0>4}")
 		self.lblTime.config(text = f"Time: {self.inGameTime:0>4}")
 		self.inGameTime = self.inGameTime + 1
-		print(f"Time: {self.inGameTime:0>4}")
+		# print(f"Label: {self.visible}")
+		# print(f"Time: {self.inGameTime:0>4}")
 		self.lblTime.after(1000, self.updateRunTime)
+
+	def setVisible(self):
+		self.visible = True
+
+	def resetVisible(self):
+		self.visible = False
 
 # third window frame page2
 class StatsPage(tk.Frame):
@@ -443,6 +463,12 @@ class StatsPage(tk.Frame):
 		# putting the button in its place by
 		# using grid
 		button2.grid(row = 2, column = 1, padx = 10, pady = 10)
+
+	def setVisible(self):
+		self.visible = True
+
+	def resetVisible(self):
+		self.visible = False
 
 os.chdir("C://Users//frans//Documents//Thuis//Python//Set//Set")
 # Driver Code

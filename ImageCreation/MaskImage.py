@@ -7,8 +7,8 @@ import os
 from os import listdir
 from os.path import join
 
-counter = 0
-
+counter = -1
+cardsNameArray = [[a,b,c,d] for a in ['1','2','3'] for b in ['1','2','3'] for c in ['1','2','3'] for d in ['1','2','3']]
 
 def changeColor(image, color):
     NewImage = np.zeros((image.shape[0], image.shape[1], 4), np.uint8)
@@ -24,6 +24,7 @@ def changeColor(image, color):
 
 def createCard(image):
     global counter
+    global cardsNameArray
     card1 = np.zeros((4*image.shape[0],image.shape[1],image.shape[2]), np.uint8)
     
     #For adding with instead of transparant
@@ -35,7 +36,7 @@ def createCard(image):
     card1[y_offset:y_offset+image.shape[0], 0:image.shape[1]] = image
     counter = counter+1
     card1CorrectSize = cv2.resize(card1, (0, 0), None, 0.236, 0.1935)
-    cv2.imwrite(f"{counter}.png", card1CorrectSize)
+    cv2.imwrite(f"{''.join(map(str, cardsNameArray[counter]))}.png", card1CorrectSize)
     # cv2.imwrite(f"{counter}.png", card1)
 
     # Creating card with 3 times the pattern
@@ -47,7 +48,7 @@ def createCard(image):
     card3[y_offset:y_offset+image.shape[0], 0:image.shape[1]] = image
     counter = counter+1
     card3CorrectSize = cv2.resize(card3, (0, 0), None, 0.236, 0.1935)
-    cv2.imwrite(f"{counter}.png", card3CorrectSize)
+    cv2.imwrite(f"{''.join(map(str, cardsNameArray[counter]))}.png", card3CorrectSize)
     # cv2.imwrite(f"{counter}.png", card3)
 
     # Creating card with 2 times the pattern
@@ -58,7 +59,7 @@ def createCard(image):
     card2[y_offset:y_offset+image.shape[0], 0:image.shape[1]] = image
     counter = counter+1
     card2CorrectSize = cv2.resize(card2, (0, 0), None, 0.236, 0.1935)
-    cv2.imwrite(f"{counter}.png", card2CorrectSize)
+    cv2.imwrite(f"{''.join(map(str, cardsNameArray[counter]))}.png", card2CorrectSize)
     # cv2.imwrite(f"{counter}.png", card2)
 
 
@@ -69,12 +70,12 @@ def convertImage():
     os.chdir("TemplateImages")
     onlyfiles = [f for f in listdir(os.getcwd()) if join(os.getcwd(), f)[-8:] == "_000.png"]
     imageStripes = cv2.imread("Stripes.png", cv2.IMREAD_GRAYSCALE)
-    os.chdir('..//..//')
+    listImages = [cv2.imread(f, cv2.IMREAD_GRAYSCALE) for f in onlyfiles ]
 
     print(onlyfiles)
-    for file in onlyfiles:
-        os.chdir("ImageCreation//TemplateImages")
-        image = cv2.imread(file, cv2.IMREAD_GRAYSCALE)
+    os.chdir('..//..//')
+    os.chdir("playingCards")
+    for image in listImages:
         filled  = image.copy()
 
         mask = np.zeros(image.shape, np.uint8)
@@ -91,7 +92,6 @@ def convertImage():
         onlyStripes = filled | imageStripes     # x or  y
         figureAndStripes = image^ ~ onlyStripes # (x xor not y)
 
-        os.chdir('..//..//')
         for color in colorArray:
             createCard(changeColor(image, color))            # Only outline
             createCard(changeColor(filled, color))              # Filled figure
@@ -101,16 +101,3 @@ def convertImage():
 # stripes = False
 convertImage()
 cv2.destroyAllWindows()
-
-##########################################################################################
-##########################################################################################
-                            #Rename Images
-##########################################################################################
-##########################################################################################
-cardsArray = [[a,b,c,d] for a in ['1','2','3'] for b in ['1','2','3'] for c in ['1','2','3'] for d in ['1','2','3']]
-print(len(cardsArray))
-
-for card in range(counter):
-    imageText = ''.join(map(str, cardsArray[card]))
-    print(imageText)
-    os.rename(str(card+1) + ".png", imageText + ".png")

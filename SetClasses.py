@@ -121,8 +121,10 @@ class ActualGame(tk.Frame):
 		
 		self.btnCardArray = [[0 for y in range(3)] for x in range(5)]
 		self.cardValueArray = [[0 for y in range(3)] for x in range(5)]
+		os.chdir("playingCards")
 		self.fillImageButtonArray()
 		self.emptyImage= PhotoImage(file='testEmpty.png')
+		os.chdir("..//")
 		for x in range(0, 5):
 			if x < 4:
 				self.btnCardArray[x][0] = tk.Button(self.setUpperFrame, 
@@ -414,6 +416,7 @@ class ActualGame(tk.Frame):
 		# self.lblTime.config(text = f"Time: {int(time.perf_counter()-self.startTime):0>4}")
 		self.lblTime.config(text = f"Time: {self.inGameTime:0>4}")
 		self.inGameTime = self.inGameTime + 1
+		print(f"Time: {self.inGameTime:0>4}")
 		self.lblTime.after(1000, self.updateRunTime)
 
 # third window frame page2

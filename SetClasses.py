@@ -1,6 +1,7 @@
 from tkinter import *
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 from itertools import combinations
 import os
 import random
@@ -63,6 +64,14 @@ class tkinterApp(tk.Tk):
 	
 	def reloadGame(self):
 		self.frames[ActualGame].destroy()
+		os.chdir("..//")
+		frame = ActualGame(self.container, self)
+		self.frames[ActualGame] = frame
+		frame.grid(row = 0, column = 0, sticky ="nsew")
+
+	def endGame(self):
+		self.frames[ActualGame].destroy()
+		os.chdir("..//")
 		frame = ActualGame(self.container, self)
 		self.frames[ActualGame] = frame
 		frame.grid(row = 0, column = 0, sticky ="nsew")
@@ -137,7 +146,7 @@ class ActualGame(tk.Frame):
 		os.chdir("playingCards")
 		self.fillImageButtonArray()
 		self.emptyImage= PhotoImage(file='testEmpty.png')
-		os.chdir("..//")
+		# os.chdir("..//")
 		for x in range(0, 5):
 			if x < 4:
 				self.btnCardArray[x][0] = tk.Button(self.setUpperFrame, 
@@ -248,7 +257,7 @@ class ActualGame(tk.Frame):
 		if self.cardsClickedCounter == 3:
 			self.refreshButtonImage()
 
-	def checkAllCards(self):	
+	def checkAllCards(self):
 		numberOfSets = 0
 		arrayForCheck = [[99, 99],[99, 99],[99, 99]]
 

@@ -46,9 +46,9 @@ def checkAllCards():
     global cardDeckArray
     arrayForCheck = [[99, 99],[99, 99],[99, 99]]
 
-    totalLoop = 10000000
-    lowerBound = 4
-    amountOfCards = 4
+    totalLoop = 1000000
+    lowerBound = 15
+    amountOfCards = 15
 
     for numberOfCards in range(lowerBound, amountOfCards+1):
         falseCounter = 0

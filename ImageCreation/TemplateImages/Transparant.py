@@ -16,11 +16,13 @@ def convertImage():
         newData = []
 
         for items in datas:
-            if items[0] == 0 and items[1] == 0 and items[2] == 0 and items[3] == 255:
+            if items[0] == 255 and items[1] == 255 and items[2] == 255:
                 newData.append((255, 255, 255, 0))
             else:
-                #newData.append((255, 192, 203, 255))
                 newData.append((0, 0, 0, 255))
+                #newData.append((255, 192, 203, 255))
+                
+
 
         img.putdata(newData)
         img.save(f"{file}", "PNG")

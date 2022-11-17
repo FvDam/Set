@@ -479,7 +479,7 @@ class StatsPage(tk.Frame):
 	def resetVisible(self):
 		self.visible = False
 
-os.chdir("C://Users//frans//Documents//Thuis//Python//Set//Set")
+# os.chdir("C://Users//frans//Documents//Thuis//Python//Set//Set")
 # Driver Code
 
 Set = tkinterApp
